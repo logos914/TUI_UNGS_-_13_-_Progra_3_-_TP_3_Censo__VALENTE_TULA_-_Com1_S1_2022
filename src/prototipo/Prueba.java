@@ -108,7 +108,8 @@ public class Prueba {
 						
 				mapa.addMapPolygon(rectangulo);
 		//		rectangulo.setName("hola");
-				rectangulo.setColor(Color.GREEN);
+				rectangulo.setColor(Color.RED);
+				rectangulo.setBackColor(Color.GREEN);
 
 		//		MapMarkerDot marcador = new MapMarkerDot("hola", uno);
 				
