@@ -13,18 +13,18 @@ import org.locationtech.jts.geom.Polygon;
 public class PoligonoDeCuatroLados {
     
 
-    private float[][] aristas;
+    
     private Polygon poligono;
    
-    public PoligonoDeCuatroLados(float[][] aristas) {
+    public PoligonoDeCuatroLados(Coordinate[] aristas) {
        
         
         if (parametroDeCreacionCorrecto(aristas)) {
-            this.aristas = aristas;
             
-            Coordinate[] aristasComoCoordenadas = this.convertirArregloDeAristasEnArregloDeCoordenadas( );
+            
+          
             GeometryFactory fact = new GeometryFactory();
-            LinearRing linear = new GeometryFactory().createLinearRing(aristasComoCoordenadas);
+            LinearRing linear = new GeometryFactory().createLinearRing(aristas);
             
             this.poligono = new Polygon(linear, null, fact);
       
@@ -40,22 +40,11 @@ public class PoligonoDeCuatroLados {
     }
 
 
-    public Coordinate[] convertirArregloDeAristasEnArregloDeCoordenadas( ) {
-    	Coordinate[] aritasComoCoordenadas = new Coordinate[this.aristas.length];
-        int contador = 0;
-        for (float[] e : this.aristas) {
-        	aritasComoCoordenadas[contador] = new Coordinate(e[0], e[1]);
-        	contador++;
-        }
-        return aritasComoCoordenadas;
-    }
-
-    public float[][] getAristas() {
-        return aristas;
-    }
+   
 
 
-    private static boolean  parametroDeCreacionCorrecto(float[][] aristas) {
+
+    private static boolean  parametroDeCreacionCorrecto(Coordinate[] aristas) {
 
         if (aristas.length == 4) {
             return true;
@@ -70,7 +59,7 @@ public class PoligonoDeCuatroLados {
     }
 
     
-    private static boolean esUnCircuitoCerradoDeCincoAristas(float[][] aristas) {
+    private static boolean esUnCircuitoCerradoDeCincoAristas(Coordinate[] aristas) {
             return (aristas[0].equals(aristas[4])) ? true : false;
         }
 
