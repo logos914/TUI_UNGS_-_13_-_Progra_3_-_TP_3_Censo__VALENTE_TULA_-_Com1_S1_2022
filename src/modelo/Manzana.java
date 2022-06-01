@@ -1,6 +1,6 @@
 package modelo;
 
-import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate; 
 
 import modelo.georreferenciable.geometrico.PoligonoDeCuatroLados;
 
