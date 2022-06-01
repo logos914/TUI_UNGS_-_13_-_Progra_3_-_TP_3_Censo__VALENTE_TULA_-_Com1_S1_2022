@@ -1,6 +1,6 @@
 package modelo;
 
-public class Censita {
+public class Censista {
 
 	private String nombre;
 	private int numero;
