@@ -36,7 +36,7 @@ public class Frontend {
 
 	private JMapViewer viewerMapa;
 
-	Controlador controlador = new Controlador();
+	
 
 	public Frontend() {
 		initialize();
@@ -148,23 +148,19 @@ public class Frontend {
 		}
 	}
 
-	private void buscarArchivo() {
+	public String buscarArchivo() {
 		JFileChooser chooser = new JFileChooser();
-		//Abre el directorio sobre el cual se encuentra el proyecto.
 		chooser.setCurrentDirectory(new java.io.File("."));
-		//Permite unicamente ingresar archivos de tipo ".geojson".
 		chooser.setFileFilter(new FileNameExtensionFilter(".geojson","geojson"));
-		//Mensaje generico.
-		chooser.setDialogTitle("Busca el archivo a leer");
-		//Indicamos que solamente elijamos archivos y no carpetas o directorios.
+		chooser.setDialogTitle("Importar archivo con radio censal");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			//Le enviamos el path como string al controlador.
-			controlador.importarDatos(chooser.getSelectedFile().toString());
+			return chooser.getSelectedFile().toString();
 		} else {
-			System.out.println("No Selection.");
+			return "";
 		}
 	}
 	

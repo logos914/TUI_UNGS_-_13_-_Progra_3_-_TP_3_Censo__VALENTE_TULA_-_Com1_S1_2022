@@ -1,12 +1,16 @@
 package controlador;
 
+import frontend.Frontend;
 import modelo.georreferenciable.externo.GeoJSON;
 
 public class Controlador {
 
 	private GeoJSON datos;
+	private Frontend gui;
 
 	public Controlador() {
+		this.gui = new Frontend();
+		this.gui.crearVistaInterfaz();
 
 	}
 
