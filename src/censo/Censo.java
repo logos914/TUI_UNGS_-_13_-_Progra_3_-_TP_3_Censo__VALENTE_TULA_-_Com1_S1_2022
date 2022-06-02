@@ -6,8 +6,14 @@ public class Censo {
 
 	private Controlador controlador;
 	
+
 	
-	public Censo() {
-		this.controlador = new Controlador();
+	public static void main(String[] args) {
+		Controlador controlador =  new Controlador();
 	}
-}
+	
+	
+	}
+
+
+
