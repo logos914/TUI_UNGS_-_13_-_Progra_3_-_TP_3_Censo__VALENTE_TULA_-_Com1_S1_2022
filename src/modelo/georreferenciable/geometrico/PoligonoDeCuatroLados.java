@@ -3,6 +3,8 @@ package modelo.georreferenciable.geometrico;
 
 
 
+import java.util.ArrayList;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
@@ -16,15 +18,15 @@ public class PoligonoDeCuatroLados {
     
     private Polygon poligono;
    
-    public PoligonoDeCuatroLados(Coordinate[] aristas) {
+    public PoligonoDeCuatroLados(ArrayList<Coordinate> coordenadasDeAristas) {
        
         
-        if (parametroDeCreacionCorrecto(aristas)) {
+        if (parametroDeCreacionCorrecto(coordenadasDeAristas)) {
             
             
           
             GeometryFactory fact = new GeometryFactory();
-            LinearRing linear = new GeometryFactory().createLinearRing(aristas);
+            LinearRing linear = new GeometryFactory().createLinearRing((Coordinate[]) coordenadasDeAristas.toArray());
             
             this.poligono = new Polygon(linear, null, fact);
       
@@ -32,7 +34,7 @@ public class PoligonoDeCuatroLados {
    
         } else {
             throw new IllegalArgumentException("El poligono debe tener cuatro aristas, " + 
-            "o cinco si la arista final es igual a la primera. \n Dato invalido: " + aristas);
+            "o cinco si la arista final es igual a la primera. \n Dato invalido: " + coordenadasDeAristas);
         }
 
 
@@ -44,13 +46,13 @@ public class PoligonoDeCuatroLados {
 
 
 
-    private static boolean  parametroDeCreacionCorrecto(Coordinate[] aristas) {
+    private static boolean  parametroDeCreacionCorrecto(ArrayList<Coordinate> aristas) {
 
-        if (aristas.length == 4) {
+        if (aristas.size() == 4) {
             return true;
         }
 
-        if (aristas.length == 5) {
+        if (aristas.size() == 5) {
             return esUnCircuitoCerradoDeCincoAristas(aristas);
         }
 
@@ -59,8 +61,8 @@ public class PoligonoDeCuatroLados {
     }
 
     
-    private static boolean esUnCircuitoCerradoDeCincoAristas(Coordinate[] aristas) {
-            return (aristas[0].equals(aristas[4])) ? true : false;
+    private static boolean esUnCircuitoCerradoDeCincoAristas(ArrayList<Coordinate> aristas) {
+            return (aristas.get(0).equals(aristas.get(4))) ? true : false;
         }
 
     

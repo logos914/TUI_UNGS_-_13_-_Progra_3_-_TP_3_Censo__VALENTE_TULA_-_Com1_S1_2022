@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.ArrayList;
+
 import org.locationtech.jts.geom.Coordinate; 
 
 import modelo.georreferenciable.geometrico.PoligonoDeCuatroLados;
@@ -9,18 +11,14 @@ public class Manzana {
 	
 	private Censista censistaAsignado;
 	private PoligonoDeCuatroLados poligonoGeografico;
-	private Coordinate[] coordenadasDeAristas;
+	private ArrayList<Coordinate> coordenadasDeAristas;
 	
-	private Manzana(Coordinate[] coordenadasDeAristas) {
-		this.coordenadasDeAristas = coordenadasDeAristas;
+	private Manzana(ArrayList<Coordinate> aristas) {
+		this.coordenadasDeAristas = aristas;
 	}
 
-	public static Manzana manzana(float[][] aristas) {
-		Manzana manzana = new Manzana(conversionTipoDeCoordenadas (aristas));
-		return manzana; 
-	}
 	
-	public static Manzana manzana(Coordinate[] aristas) {
+	public static Manzana manzanaDesdeCoordenadas(ArrayList<Coordinate> aristas) {
 		Manzana manzana = new Manzana(aristas);
 		return manzana; 
 	}
@@ -43,6 +41,11 @@ public class Manzana {
 		this.poligonoGeografico = new PoligonoDeCuatroLados(this.coordenadasDeAristas);
 	}
 
+	public ArrayList<Coordinate> getCoordenadasDeAristas() {
+		return this.coordenadasDeAristas;
+	}
+
+	
 	
 
 }
