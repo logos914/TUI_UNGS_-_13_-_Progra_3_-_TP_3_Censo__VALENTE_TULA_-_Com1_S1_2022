@@ -20,6 +20,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -39,15 +40,19 @@ public class Frontend {
 	private JMapViewer viewerMapa;
 	private Controlador controlador;
 
-	
-
 	public Frontend(Controlador controlador) {
-		this.controlador = controlador;
-		this.frameInicial = this.frameInicial();
-		this.frameInicial.setVisible(true);
+
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			this.controlador = controlador;
+			this.frameInicial = this.frameInicial();
+			this.frameInicial.setVisible(true);
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 	}
-
-
 
 	private void initialize() {
 		frameInicial();
@@ -57,7 +62,7 @@ public class Frontend {
 	private JFrame frameInicial() {
 		frameInicial = new JFrame();
 		fondoDePantalla(frameInicial);
-		
+
 		frameInicial.setTitle("Censo 2022");
 		frameInicial.setBounds(100, 100, 850, 700);
 		frameInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,13 +70,15 @@ public class Frontend {
 		frameInicial.setLocationRelativeTo(null);
 
 		JButton botonInicio = new JButton("Importar Radio Censal");
-		botonInicio.setBounds(390, 455, 220, 23);
+		botonInicio.setBounds(350, 455, 220, 23);
 		botonInicio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				importarRadioCensal();
 			}
 		});
 		frameInicial.getContentPane().add(botonInicio);
+		
+		frameInicial.setLocationRelativeTo(null);
 		return frameInicial;
 	}
 
@@ -100,13 +107,34 @@ public class Frontend {
 		JButton botonUbicacionMapa = new JButton("Ubicar en mapa");
 		botonUbicacionMapa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			//TODO: Ver que onda
+				ubicarEnMapa();
 			}
 		});
-
+		
 		botonUbicacionMapa.setBounds(10, 647, 110, 23);
-this.viewerMapa.add(botonUbicacionMapa);
+		this.viewerMapa.add(botonUbicacionMapa);
+		
+		JButton botonZoom = new JButton("Hacer zoom");
+		botonZoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				zoomAMarcadores();
+			}
+		});
+		botonZoom.setBounds(130, 647, 110, 23);
+		this.viewerMapa.add(botonZoom);
+		
+		JButton botonMenu = new JButton("Volver al inicio");
+		botonMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				volverAlMenu();
+			}
+		});
+		botonMenu.setBounds(250, 647, 110, 23);
+		this.viewerMapa.add(botonMenu);
 
+		
+		
+		frameMapa.setLocationRelativeTo(null);
 		return frameMapa;
 	}
 
@@ -122,25 +150,30 @@ this.viewerMapa.add(botonUbicacionMapa);
 			e1.printStackTrace();
 		}
 	}
+	
+	private void volverAlMenu() {
+		frameMapa.setVisible(false);
+		frameMapa.dispose();
+		frameInicial.setVisible(true);
+	}
+	
+	private void zoomAMarcadores() {
+		this.viewerMapa.setDisplayToFitMapPolygons();
+	}
 
 	private void importarRadioCensal() {
-		buscarArchivo();
+		buscarArchivoMapa();
 	}
-	
-	
+
 	private void mostrarRadioCensalImportado(String pathRadioCensalImportado) {
 		this.controlador.importarDatos(pathRadioCensalImportado);
-		frameMapa();
-		frameInicial.setVisible(false);
-		frameMapa.setVisible(true);
-		ubicarEnMapa();
+		buscarArchivoCensistas();
 	}
-	
 
-	public void buscarArchivo() {
+	public void buscarArchivoMapa() {
 		JFileChooser chooser = new JFileChooser();
 		chooser.setCurrentDirectory(new java.io.File("./Radios Censales Para Importar/"));
-		chooser.setFileFilter(new FileNameExtensionFilter(".geojson","geojson"));
+		chooser.setFileFilter(new FileNameExtensionFilter(".geojson", "geojson"));
 		chooser.setDialogTitle("Importar archivo con radio censal");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
@@ -148,22 +181,43 @@ this.viewerMapa.add(botonUbicacionMapa);
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 			mostrarRadioCensalImportado(chooser.getSelectedFile().toString());
 		} else {
-			//  TODO: Tirar un modal con error y volver a abrir cuadro
-			 buscarArchivo();
+			buscarArchivoMapa();
 		}
 	}
 	
+	public void buscarArchivoCensistas() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new java.io.File("./Censistas Disponibles/"));
+		chooser.setFileFilter(new FileNameExtensionFilter(".txt", "txt"));
+		chooser.setDialogTitle("Importar archivo con los censistas");
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.setAcceptAllFileFilterUsed(false);
+
+		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+			enviarCensistas(chooser.getSelectedFile().toString());
+		} else {
+			buscarArchivoCensistas();
+		}
+	}
+	
+	private void enviarCensistas(String pathCensista) {
+		this.controlador.setCensistas(pathCensista);
+		frameMapa();
+		frameInicial.setVisible(false);
+		frameMapa.setVisible(true);
+	}
+
 	private void ubicarEnMapa() {
-		
+
 		for (Nodo<Manzana> i : this.controlador.getManzanas()) {
-			
-			//Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+
+			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
-					
+
 			// pero debemos convertirlos desde el tipo de coordenada de jts
-					for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
-						listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(),e.getY()));
-					}
+			for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
+				listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(), e.getY()));
+			}
 
 			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
 			this.viewerMapa.addMapPolygon(rectangulo);
@@ -171,8 +225,7 @@ this.viewerMapa.add(botonUbicacionMapa);
 			rectangulo.setBackColor(Color.GREEN);
 			rectangulo.setVisible(true);
 		}
-			
+
 		this.viewerMapa.setDisplayToFitMapPolygons();
-		
 	}
 }

@@ -25,6 +25,7 @@ public class Manzana {
 		return manzana; 
 	}
 	
+	@SuppressWarnings("unused")
 	private static Coordinate[]  conversionTipoDeCoordenadas (float[][] aristas) {
 		Coordinate[] aristasComoCoordenadas = new Coordinate[aristas.length];
 	    int contador = 0;
