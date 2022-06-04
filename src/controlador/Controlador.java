@@ -156,18 +156,18 @@ public class Controlador {
 				contadorDeAsignacionMaxima++;
 				anterior = e;
 			} else {
-					if (contadorDeAsignacionMaxima < 3 && (e.esVecino(anterior))) {
+					if (contadorDeAsignacionMaxima < 3 && e.esVecino(anterior)) {
 						e.getInformacion().asignarCensista(CensistaActual);
 						contadorDeAsignacionMaxima++;
 						anterior = e;
 	
 					} else {
 						contadorDeAsignacionMaxima = 0;
-						CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
-						contadorDeAsignacionMaxima++;
-						e.getInformacion().asignarCensista(CensistaActual);
 						contadorDeCensistas++;
-						anterior = null;
+						CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
+						e.getInformacion().asignarCensista(CensistaActual);
+						contadorDeAsignacionMaxima++;
+						anterior = e;
 					}
 
 			}
