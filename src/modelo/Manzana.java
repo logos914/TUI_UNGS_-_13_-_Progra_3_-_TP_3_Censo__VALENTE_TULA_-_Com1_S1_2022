@@ -12,6 +12,7 @@ public class Manzana {
 	private Censista censistaAsignado;
 	private PoligonoDeCuatroLados poligonoGeografico;
 	private ArrayList<Coordinate> coordenadasDeAristas;
+	private Coordinate centro;
 	
 	private Manzana(ArrayList<Coordinate> aristas) {
 		this.coordenadasDeAristas = aristas;
@@ -20,6 +21,7 @@ public class Manzana {
 	
 	public static Manzana manzanaDesdeCoordenadas(ArrayList<Coordinate> aristas) {
 		Manzana manzana = new Manzana(aristas);
+		manzana.crearPoligonoDeCuatroLados();
 		return manzana; 
 	}
 	
@@ -44,7 +46,22 @@ public class Manzana {
 	public ArrayList<Coordinate> getCoordenadasDeAristas() {
 		return this.coordenadasDeAristas;
 	}
+	
+	public boolean laManzanaContiene (Coordinate elemento) {
+		return this.poligonoGeografico.contiene(elemento);
+	}
 
+
+	public Coordinate getCentro() {
+		return centro;
+	}
+
+
+	public void setCentro(Coordinate centro) {
+		this.centro = centro;
+	}
+	
+	
 	
 	
 

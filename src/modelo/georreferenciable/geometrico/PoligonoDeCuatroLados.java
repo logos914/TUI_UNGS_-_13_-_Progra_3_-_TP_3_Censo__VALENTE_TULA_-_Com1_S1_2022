@@ -26,7 +26,15 @@ public class PoligonoDeCuatroLados {
             
           
             GeometryFactory fact = new GeometryFactory();
-            LinearRing linear = new GeometryFactory().createLinearRing((Coordinate[]) coordenadasDeAristas.toArray());
+            
+            Coordinate[] coordenadasParaConstruirPoligono = new Coordinate[coordenadasDeAristas.size()];
+            
+            for (int i = 0; i<coordenadasDeAristas.size();i++) {
+            	coordenadasParaConstruirPoligono[i] = coordenadasDeAristas.get(i);
+            }
+            
+            
+            LinearRing linear = new GeometryFactory().createLinearRing(coordenadasParaConstruirPoligono);
             
             this.poligono = new Polygon(linear, null, fact);
       

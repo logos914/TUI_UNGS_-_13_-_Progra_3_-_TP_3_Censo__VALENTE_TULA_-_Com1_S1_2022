@@ -56,7 +56,6 @@ public class Frontend {
 
 	private JFrame frameInicial() {
 		frameInicial = new JFrame();
-		
 		fondoDePantalla(frameInicial);
 		
 		frameInicial.setTitle("Censo 2022");
@@ -128,6 +127,7 @@ this.viewerMapa.add(botonUbicacionMapa);
 		buscarArchivo();
 	}
 	
+	
 	private void mostrarRadioCensalImportado(String pathRadioCensalImportado) {
 		this.controlador.importarDatos(pathRadioCensalImportado);
 		frameMapa();
@@ -135,19 +135,6 @@ this.viewerMapa.add(botonUbicacionMapa);
 		frameMapa.setVisible(true);
 		ubicarEnMapa();
 	}
-	
-	private void accionBoton(String boton) {
-		switch (boton) {
-		case "Comenzar": {
-			//Quitar esto de aquí :-)
-			break;
-		}
-		case "Ubicar": {
-			ubicarEnMapa();
-		}
-		}
-	}
-	
 	
 
 	public void buscarArchivo() {
@@ -168,28 +155,23 @@ this.viewerMapa.add(botonUbicacionMapa);
 	
 	private void ubicarEnMapa() {
 		
-		
 		for (Nodo<Manzana> i : this.controlador.getManzanas()) {
+			
+			//Los polígonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 					
+			// pero debemos convertirlos desde el tipo de coordenada de jts
 					for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
 						listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(),e.getY()));
-						
 					}
-					
-					
-				
 
 			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
-
 			this.viewerMapa.addMapPolygon(rectangulo);
-
-			rectangulo.setColor(Color.RED);
+			rectangulo.setColor(Color.GREEN);
 			rectangulo.setBackColor(Color.GREEN);
 			rectangulo.setVisible(true);
 		}
-		
-	
+			
 		this.viewerMapa.setDisplayToFitMapPolygons();
 		
 	}
