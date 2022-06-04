@@ -10,6 +10,8 @@ import java.util.Scanner;
 import org.locationtech.jts.geom.Coordinate;
 
 import frontend.Frontend;
+import grafo.ArbolGeneradorMinimo;
+import grafo.BFS;
 import grafo.Grafo;
 import grafo.Nodo;
 import modelo.Censista;
@@ -25,8 +27,9 @@ public class Controlador {
 	private Grafo<Manzana> radiocensal;
 	private Censista censista;
 	private Frontend frontend;
-	ArrayList<Censista> listadoCensistas = new ArrayList<Censista>();
-	
+	private ArrayList<Censista> listadoCensistas = new ArrayList<Censista>();
+	private Grafo<Manzana> arbolcensal;
+	private Grafo<Manzana> recorrido;
 
 	public Controlador() {
 
@@ -90,6 +93,10 @@ public class Controlador {
 	public ArrayList<Nodo<Manzana>> getManzanas() {
 		return this.radiocensal.obtenerTodosLosVertices();
 	}
+	
+	public ArrayList<Nodo<Manzana>> getManzanasDeRecorrido() {
+		return this.recorrido.obtenerTodosLosVertices();
+	}
 
 	public ArrayList<Censista> setCensistas(String pathCensista) {
 
@@ -105,18 +112,17 @@ public class Controlador {
 			archivoCensistas.close();
 
 			for (String s : cencistasString) {
-				Censista c = new Censista();
-				c.setNombre(s);
+				Censista c = new Censista(s, listadoCensistas.size());
 				listadoCensistas.add(c);
 			}
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		return listadoCensistas;
 	}
-	
+
 	private ArrayList<Censista> getCensistas() {
 		return listadoCensistas;
 	}
@@ -132,6 +138,41 @@ public class Controlador {
 
 	}
 
+	public void obtenerArbolCensal() {
+		ArbolGeneradorMinimo<Manzana> arbol = new ArbolGeneradorMinimo(this.radiocensal);
+		this.arbolcensal = arbol.generarMinimo();
+		BFS bfs = new BFS(this.arbolcensal);
+		bfs.esConexo();
+		this.recorrido = bfs.obtenerRecorrido();
+
+		int contadorDeAsignacionMaxima = 0;
+		Integer contadorDeCensistas = 1;
+		Censista CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
+		Nodo<Manzana> anterior = null;
+
+		for (Nodo<Manzana> e : recorrido.obtenerTodosLosVertices()) {
+			if (anterior == null) {
+				e.getInformacion().asignarCensista(CensistaActual);
+				contadorDeAsignacionMaxima++;
+				anterior = e;
+			} else {
+					if (contadorDeAsignacionMaxima < 3 && (e.esVecino(anterior))) {
+						e.getInformacion().asignarCensista(CensistaActual);
+						contadorDeAsignacionMaxima++;
+						anterior = e;
+	
+					} else {
+						contadorDeAsignacionMaxima = 0;
+						CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
+						contadorDeAsignacionMaxima++;
+						e.getInformacion().asignarCensista(CensistaActual);
+						contadorDeCensistas++;
+						anterior = null;
+					}
+
+			}
+		}
+	}
 //	private Map<Manzana, Censista> algoritmoGoloso() {
 //		for (Nodo<Manzana> i : this.getManzanas()) {
 //			for (Censista c : this.getCensistas()) {

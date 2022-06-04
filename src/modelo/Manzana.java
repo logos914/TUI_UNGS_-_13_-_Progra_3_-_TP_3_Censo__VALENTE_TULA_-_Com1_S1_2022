@@ -62,7 +62,9 @@ public class Manzana {
 		this.centro = centro;
 	}
 	
-	
+	public Censista getCensista() {
+		return this.censistaAsignado;
+	}
 	
 	
 

@@ -8,9 +8,11 @@ public class BFS<T1> {
 	ArrayList<Nodo<T1>> nodosPendientes;
 	boolean[] nodosProcesados; // no los toco más, ya me paré en ellos y obtuve sus vecinos y los marqué
 	boolean[] nodosMarcados; // Este nodo es alcanzable
+	private Grafo<T1> recorrido;
 
 	public BFS(Grafo<T1> grafo) {
 		this.grafo = grafo;
+		this.recorrido = new Grafo<T1>();
 	}
 
 	public boolean esConexo() {
@@ -53,6 +55,7 @@ public class BFS<T1> {
 	private void marcarTambienConfirmarActual(int pos) {
 		this.nodosMarcados[pos] = true;
 		this.nodosProcesados[pos] = true;
+		this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos));
 	}
 
 	private boolean seRecorrieronTodosLosVertices() {
@@ -92,5 +95,9 @@ public class BFS<T1> {
 
 		return -1;
 
+	}
+	
+	public Grafo<T1> obtenerRecorrido() {
+		return this.recorrido;
 	}
 }

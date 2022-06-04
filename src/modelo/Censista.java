@@ -5,6 +5,11 @@ public class Censista {
 	private String nombre;
 	private int numero;
 	
+	public Censista (String nombre, int numero) {
+		this.nombre = nombre;
+		this.numero = numero;
+	}
+	
 	public String getNombre() {
 		return nombre;
 	}

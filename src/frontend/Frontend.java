@@ -26,7 +26,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 import controlador.Controlador;
 import grafo.Nodo;
@@ -104,10 +106,10 @@ public class Frontend {
 
 		panelMapa.add(this.viewerMapa);
 
-		JButton botonUbicacionMapa = new JButton("Ubicar en mapa");
+		JButton botonUbicacionMapa = new JButton("Distribuir Censistas");
 		botonUbicacionMapa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ubicarEnMapa();
+	distribuirCensistas();
 			}
 		});
 		
@@ -168,6 +170,9 @@ public class Frontend {
 	private void mostrarRadioCensalImportado(String pathRadioCensalImportado) {
 		this.controlador.importarDatos(pathRadioCensalImportado);
 		buscarArchivoCensistas();
+		ubicarEnMapa();
+		zoomAMarcadores();
+		
 	}
 
 	public void buscarArchivoMapa() {
@@ -221,9 +226,42 @@ public class Frontend {
 
 			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
 			this.viewerMapa.addMapPolygon(rectangulo);
-			rectangulo.setColor(Color.GREEN);
+			rectangulo.setColor(Color.RED);
+			
+			rectangulo.setVisible(true);
+		}
+
+		this.viewerMapa.setDisplayToFitMapPolygons();
+	}
+	
+	
+	
+	private void distribuirCensistas() {
+		this.controlador.obtenerArbolCensal();
+		this.viewerMapa.removeAllMapMarkers();
+		this.viewerMapa.removeAllMapPolygons();
+		
+		// TODO: Refactuor urgente aqui con el mismo codigo de la f anterior
+		for (Nodo<Manzana> i : this.controlador.getManzanasDeRecorrido()) {
+
+			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
+
+			// pero debemos convertirlos desde el tipo de coordenada de jts
+			for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
+				listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(), e.getY()));
+			}
+
+			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
+			this.viewerMapa.addMapPolygon(rectangulo);
+			rectangulo.setColor(Color.BLUE);
 			rectangulo.setBackColor(Color.GREEN);
 			rectangulo.setVisible(true);
+			
+			org.openstreetmap.gui.jmapviewer.Coordinate coordCentro = new org.openstreetmap.gui.jmapviewer.Coordinate(i.getInformacion().getCentro().x,i.getInformacion().getCentro().y);
+			MapMarker marcador = new MapMarkerDot(i.getInformacion().getCensista().getNombre(), coordCentro);
+			this.viewerMapa.addMapMarker(marcador);
+			
 		}
 
 		this.viewerMapa.setDisplayToFitMapPolygons();
