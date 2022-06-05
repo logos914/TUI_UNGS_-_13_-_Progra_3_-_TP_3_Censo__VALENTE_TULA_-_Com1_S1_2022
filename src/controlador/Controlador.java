@@ -58,7 +58,7 @@ public class Controlador {
 
 	private void convertirPoligonosDeJsonEnVertices() {
 
-		for (ListadoDeCoordenadasParaPoligono e : this.datos.getListadoDeCoordParaPoligonos()) {
+		for (ListadoDeCoordenadasParaPoligono e : this.datos.obtenerListadoDeCoordParaPoligonos()) {
 			Manzana manzana = Manzana.manzanaDesdeCoordenadas(e.getDatos());
 			this.radiocensal.agregarVertice(manzana);
 		}
@@ -67,7 +67,7 @@ public class Controlador {
 
 	private void convertirLineasDeJsonEnAristas() {
 
-		for (ListadoDeCoordenadasParaLinea e : this.datos.getListadoDeCoordParaLineas()) {
+		for (ListadoDeCoordenadasParaLinea e : this.datos.obtenerListadoDeCoordParaLineas()) {
 
 			Nodo<Manzana> nodoA = encontrarManzanaALaQuePertenece(e.getDatos().get(0));
 			Nodo<Manzana> nodoB = encontrarManzanaALaQuePertenece(e.getDatos().get(1));
@@ -79,7 +79,7 @@ public class Controlador {
 
 	private void convertirPuntosDeJsonEnCentrosDeNodo() {
 
-		for (ListadoDeCoordenadasParaPunto e : this.datos.getListadoDeCoordParaPuntos()) {
+		for (ListadoDeCoordenadasParaPunto e : this.datos.obtenerListadoDeCoordParaPuntos()) {
 
 			Coordinate centro = e.getDatos();
 
