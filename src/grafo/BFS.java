@@ -31,6 +31,9 @@ public class BFS<T1> {
 
 		}
 
+		
+		
+		
 		return seRecorrieronTodosLosVertices();
 
 	}
@@ -48,14 +51,24 @@ public class BFS<T1> {
 			int indiceVecinoParaMarcar = this.nodosPendientes.indexOf(e.getDestino());
 
 			this.nodosMarcados[indiceVecinoParaMarcar] = true;
-
+			
+			Arista<T1> arista = new Arista(e.getDestino(),nodoI,1.0f);
+//			if (!this.recorrido.existeArista(arista)) {
+//				this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(nodoI));
+//			}
 		}
 	}
 	
 	private void marcarTambienConfirmarActual(int pos) {
 		this.nodosMarcados[pos] = true;
 		this.nodosProcesados[pos] = true;
+		
 		this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos));
+		
+		if (pos + 2 == this.grafo.tamano()) {
+			this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos + 1));
+		}
+		
 	}
 
 	private boolean seRecorrieronTodosLosVertices() {
