@@ -26,7 +26,7 @@ public class Controlador {
 	private GeoJSON datos;
 	private Grafo<Manzana> radiocensal;
 	private Censista censista;
-	private ArrayList<Censista> listadoCensistas = new ArrayList<Censista>();
+
 	private Grafo<Manzana> arbolcensal;
 	private Grafo<Manzana> recorrido;
 
@@ -82,35 +82,18 @@ public class Controlador {
 	public ArrayList<Nodo<Manzana>> getManzanasDeRecorrido() {
 		return this.recorrido.obtenerTodosLosVertices();
 	}
-
-	public ArrayList<Censista> setCensistas(String pathCensista) {
-
-		List<String> cencistasString = new ArrayList<String>();
-		Scanner archivoCensistas;
+	
+	public boolean hayRecorridoYaCreado() {
+		if (this.recorrido != null) {
 		
-		try {
-			archivoCensistas = new Scanner(new File(pathCensista)).useDelimiter(",\\s*");
+			return true;
+		} else {
 
-			while (archivoCensistas.hasNext()) {
-				cencistasString.add(archivoCensistas.nextLine());
-			}
-			archivoCensistas.close();
-
-			for (String s : cencistasString) {
-				Censista c = new Censista(s, listadoCensistas.size());
-				listadoCensistas.add(c);
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			return false;
 		}
-
-		return listadoCensistas;
+		
 	}
 
-	private ArrayList<Censista> obtenerCensistas() {
-		return listadoCensistas;
-	}
 
 	private Nodo<Manzana> encontrarManzanaALaQuePertenece(Coordinate coordenada) {
 		for (Nodo<Manzana> i : this.radiocensal.obtenerTodosLosVertices()) {
@@ -154,15 +137,20 @@ public class Controlador {
 		}
 	}
 	
-//	private Map<Manzana, Censista> algoritmoGoloso() {
-//		for (Nodo<Manzana> i : this.getManzanas()) {
-//			for (Censista c : this.getCensistas()) {
-//				i.getInformacion();
-//				if(c.getNumero()<=3) {
-//					
-//				}
-//			}
-//		}
-//	}
+	
+	public void reinicializar() {
+		this.datos.inicializar();
+		this.datos.quitarJerarquiaDeImportacion();
+		
+		this.radiocensal = null;
+		this.radiocensal = new Grafo<Manzana>();
+		
+		this.arbolcensal = null;
+		this.recorrido = null;
+
+		this.convertirGeoJsonenGrafo();
+	}
+	
+
 
 }

@@ -45,6 +45,7 @@ public class Frontend {
 	private JMapViewer viewerMapa;
 	private Controlador controlador;
 	private JCheckBox chkboxIgnoraOrdenImportacion;
+	private String pathArchivoGeoJson;
 
 	public Frontend(Controlador controlador) {
 
@@ -135,23 +136,24 @@ public class Frontend {
 
 		panelMapa.add(this.viewerMapa);
 
-		JButton botonUbicacionMapa = new JButton("Distribuir Censistas");
+		JButton botonUbicacionMapa = new JButton("Distribuir censistas");
 		botonUbicacionMapa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 					distribuirCensistas();
+					botonUbicacionMapa.setText("Redistribuir censistas");
 			}
 		});
 		
-		botonUbicacionMapa.setBounds(10, 647, 110, 23);
+		botonUbicacionMapa.setBounds(10, 647, 150, 23);
 		this.viewerMapa.add(botonUbicacionMapa);
 		
-		JButton botonZoom = new JButton("Hacer zoom");
+		JButton botonZoom = new JButton("Centrar");
 		botonZoom.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				zoomAMarcadores();
 			}
 		});
-		botonZoom.setBounds(130, 647, 110, 23);
+		botonZoom.setBounds(170, 647, 110, 23);
 		this.viewerMapa.add(botonZoom);
 		
 		JButton botonMenu = new JButton("Volver al inicio");
@@ -160,7 +162,7 @@ public class Frontend {
 				volverAlMenu();
 			}
 		});
-		botonMenu.setBounds(250, 647, 110, 23);
+		botonMenu.setBounds(290, 647, 110, 23);
 		this.viewerMapa.add(botonMenu);
 
 		
@@ -198,8 +200,8 @@ public class Frontend {
 		buscarArchivoMapa();
 	}
 
-	private void mostrarRadioCensalImportado(String pathRadioCensalImportado) {
-		this.controlador.importarDatos(pathRadioCensalImportado, this.chkboxIgnoraOrdenImportacion.isSelected());
+	private void mostrarRadioCensalImportado() {
+		this.controlador.importarDatos(this.pathArchivoGeoJson, this.chkboxIgnoraOrdenImportacion.isSelected());
 		frameMapa();
 		frameInicial.setVisible(false);
 		frameMapa.setVisible(true);
@@ -217,7 +219,8 @@ public class Frontend {
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			mostrarRadioCensalImportado(chooser.getSelectedFile().toString());
+			this.pathArchivoGeoJson = chooser.getSelectedFile().toString();
+			mostrarRadioCensalImportado();
 		} else {
 			buscarArchivoMapa();
 		}
@@ -237,7 +240,6 @@ public class Frontend {
 			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
 			this.viewerMapa.addMapPolygon(rectangulo);
 			rectangulo.setColor(Color.RED);
-			
 			rectangulo.setVisible(true);
 		}
 
@@ -247,9 +249,17 @@ public class Frontend {
 	
 	
 	private void distribuirCensistas() {
+		
+		if (this.controlador.hayRecorridoYaCreado()) {
+			this.controlador.reinicializar();
+		}
+		
 		this.controlador.obtenerArbolCensal();
 		this.viewerMapa.removeAllMapMarkers();
 		this.viewerMapa.removeAllMapPolygons();
+		
+		
+	
 		
 		// TODO: Refactuor urgente aqui con el mismo codigo de la f anterior
 		for (Nodo<Manzana> i : this.controlador.getManzanasDeRecorrido()) {
