@@ -17,9 +17,9 @@ public class GeoJSON {
 	private ArrayList<ElementoGeometricoGeorreferenciable> features;
 	
 	// Listado procesable de coordenadas para formar figuras
-	private ArrayList<ListadoDeCoordenadasParaPoligono> listadoDeCoordParaPoligonos;
-	private ArrayList<ListadoDeCoordenadasParaLinea> listadoDeCoordParaLineas;
-	private ArrayList<ListadoDeCoordenadasParaPunto> listadoDeCoordParaPuntos;
+	private ArrayList<ListadoDeCoordenadasParaPoligono> coleccionDeListasDeCoordParaPoligonos;
+	private ArrayList<ListadoDeCoordenadasParaLinea> coleccionDeListasDeCoordParaLineas;
+	private ArrayList<ListadoDeCoordenadasParaPunto> coleccionDeListasDeCoordParaPuntos;
 
 	
 	public GeoJSON (String type, ArrayList<ElementoGeometricoGeorreferenciable> features) {
@@ -32,11 +32,13 @@ public class GeoJSON {
 		Gson gson = new Gson();
 		GeoJSON geojsonParaRetornar = null;
 		
-		try {
+		try 
+		{
 			BufferedReader br = new BufferedReader(new FileReader(archivo));
 			geojsonParaRetornar = gson.fromJson(br, GeoJSON.class);
 		}
-		catch (Exception e ) {
+		catch (Exception e ) 
+		{
 			System.out.println("No se puede importar el archivo .geojson \n  Excepción: " + e);
 		}
 		
@@ -45,56 +47,54 @@ public class GeoJSON {
 	}
 	
 	public void inicializar() {
-		this.listadoDeCoordParaPoligonos = new ArrayList();
-		this.listadoDeCoordParaLineas = new ArrayList();
-		this.listadoDeCoordParaPuntos = new ArrayList();
+		this.coleccionDeListasDeCoordParaPoligonos = new ArrayList();
+		this.coleccionDeListasDeCoordParaLineas = new ArrayList();
+		this.coleccionDeListasDeCoordParaPuntos = new ArrayList();
+		this.clasificarElementosPorTipo();
 	}
 	
-	
 	public void clasificarElementosPorTipo() {
-
-		for (ElementoGeometricoGeorreferenciable e : features) {
+		
+		for (ElementoGeometricoGeorreferenciable e : features) 
+		{		
 			
-			if (e.getTipo().equals(TipoDeElemento.POLIGONO)) {
+			if (e.getTipo().equals(TipoDeElemento.POLIGONO)) 
+			{
 				ListadoDeCoordenadasParaPoligono CoordPoligono = new ListadoDeCoordenadasParaPoligono(e.getGeometry());
-				listadoDeCoordParaPoligonos.add(CoordPoligono);
+				coleccionDeListasDeCoordParaPoligonos.add(CoordPoligono);
 			}
 			
-			if (e.getTipo().equals(TipoDeElemento.LINEA)) {
+			if (e.getTipo().equals(TipoDeElemento.LINEA)) 
+			{
 				ListadoDeCoordenadasParaLinea CoordLinea = new ListadoDeCoordenadasParaLinea(e.getGeometry());
-				listadoDeCoordParaLineas.add(CoordLinea);
+				coleccionDeListasDeCoordParaLineas.add(CoordLinea);
 			}
 			
-			if (e.getTipo().equals(TipoDeElemento.PUNTO)) {
+			if (e.getTipo().equals(TipoDeElemento.PUNTO)) 
+			{
 				ListadoDeCoordenadasParaPunto CoordPunto = new ListadoDeCoordenadasParaPunto(e.getGeometry());
-				listadoDeCoordParaPuntos.add(CoordPunto);
+				coleccionDeListasDeCoordParaPuntos.add(CoordPunto);
 			}
 
 		}
-		
-		this.quitarJerarquiaDeImportacion();
-		
+
 	}
 	
-
 	public ArrayList<ListadoDeCoordenadasParaPoligono> obtenerListadoDeCoordParaPoligonos() {
-		return listadoDeCoordParaPoligonos;
+		return coleccionDeListasDeCoordParaPoligonos;
 	}
-
 
 	public ArrayList<ListadoDeCoordenadasParaLinea> obtenerListadoDeCoordParaLineas() {
-		return listadoDeCoordParaLineas;
+		return coleccionDeListasDeCoordParaLineas;
 	}
 
-
 	public ArrayList<ListadoDeCoordenadasParaPunto> obtenerListadoDeCoordParaPuntos() {
-		return listadoDeCoordParaPuntos;
+		return coleccionDeListasDeCoordParaPuntos;
 	}
 	
 	public void quitarJerarquiaDeImportacion() {
-		Collections.shuffle(listadoDeCoordParaPoligonos);
-		Collections.shuffle(listadoDeCoordParaLineas);
-
+		Collections.shuffle(coleccionDeListasDeCoordParaPoligonos);
+		Collections.shuffle(coleccionDeListasDeCoordParaLineas);
 	}
 	
 	public ArrayList<ElementoGeometricoGeorreferenciable> getFeatures() {
@@ -105,6 +105,4 @@ public class GeoJSON {
 		this.features = features;
 	}
 	
-	
-
 }
