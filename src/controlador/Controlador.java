@@ -34,9 +34,12 @@ public class Controlador {
 		this.radiocensal = new Grafo<Manzana>();
 	}
 
-	public void importarDatos(String path) {
+	public void importarDatos(String path, boolean sinJerarquia) {
 		try {
 			this.datos = GeoJSON.leerJSON(path);
+			if (sinJerarquia) {
+				this.datos.quitarJerarquiaDeImportacion();
+			}
 			this.convertirGeoJsonenGrafo();
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -129,14 +132,16 @@ public class Controlador {
 		this.recorrido = bfs.obtenerRecorrido();
 
 		int contadorDeAsignacionMaxima = 0;
-		Integer contadorDeCensistas = 1;
-		Censista CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
+		Integer contadorDeCensistas = 0;
+		Censista CensistaActual = null;
 		Nodo<Manzana> anterior = null;
 		
 
-		for (Nodo<Manzana> e : recorrido.obtenerTodosLosVertices()) {
+		for (Nodo<Manzana> e : recorrido.obtenerTodosLosVertices()) 
+		{
 			
-			if (contadorDeAsignacionMaxima == 3 || !e.esVecino(anterior)) {
+			if (contadorDeAsignacionMaxima == 3 || !e.esVecino(anterior)) 
+			{
 				contadorDeCensistas++;
 				contadorDeAsignacionMaxima = 0;
 				CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
