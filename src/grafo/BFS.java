@@ -18,22 +18,13 @@ public class BFS<T1> {
 	public boolean esConexo() {
 
 		Nodo<T1> i;
-
 		nodosPendientes = this.grafo.obtenerTodosLosVertices();
 		nodosProcesados = new boolean[this.grafo.tamano()];
 		nodosMarcados = new boolean[this.grafo.tamano()];
-
-		
-		
-		while (!this.seRecorrieronTodosLosVertices() && this.hayMasParaProcesar()) {
-
+		while (!this.seRecorrieronTodosLosVertices() && this.hayMasParaProcesar()) 
+		{
 			obtenerNodoActualYMarcarVecinos();
-
 		}
-
-		
-		
-		
 		return seRecorrieronTodosLosVertices();
 
 	}
@@ -46,69 +37,67 @@ public class BFS<T1> {
 	}
 	
 	private void marcarVecinos(Nodo<T1> nodoI) {
-		for (Distancia<T1> e : this.grafo.vecinos(nodoI)) {
-
+		for (Distancia<T1> e : this.grafo.vecinos(nodoI)) 
+		{
 			int indiceVecinoParaMarcar = this.nodosPendientes.indexOf(e.getDestino());
-
 			this.nodosMarcados[indiceVecinoParaMarcar] = true;
-			
 			Arista<T1> arista = new Arista(e.getDestino(),nodoI,1.0f);
-//			if (!this.recorrido.existeArista(arista)) {
-//				this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(nodoI));
-//			}
 		}
 	}
 	
 	private void marcarTambienConfirmarActual(int pos) {
 		this.nodosMarcados[pos] = true;
 		this.nodosProcesados[pos] = true;
-		
+		agregarVerticeEnElRecorrido(pos);
+	}
+
+	private void agregarVerticeEnElRecorrido(int pos) {
+		//Agregamos el vertice actual al recorrido
 		this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos));
 		
-		if (pos + 2 == this.grafo.tamano()) {
+		// Si es el último vértice procesado (es decir el anteúltimo nodo del grafo)
+		// entonces agregamos también el último nodo del grafo al recorrido.
+		if (pos + 2 == this.grafo.tamano()) 
+		{
 			this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos + 1));
 		}
-		
 	}
 
 	private boolean seRecorrieronTodosLosVertices() {
 		boolean acumulador = true;
-
-		for (boolean i : this.nodosMarcados) {
+		for (boolean i : this.nodosMarcados) 
+		{
 			acumulador = acumulador && i;
 		}
-
 		return acumulador;
-
 	}
 	
 	private boolean hayMasParaProcesar() {
-		if (this.proximoParaProcesar() == -1) {
+		if (this.proximoParaProcesar() == -1) 
+		{
 			return false;
-		} else {
+		}
+		else
+		{
 			return true;
 		}
 	}
 	
-	
-	
 	private int proximoParaProcesar() {
-		
-		if (!this.nodosProcesados[0]) {
+		if (!this.nodosProcesados[0]) 
+		{
 			return 0;
 		}
 
-		for (int i = 0; i < this.nodosPendientes.size(); i++) {
-
-			if (this.nodosMarcados[i] && !this.nodosProcesados[i]) {
+		for (int i = 0; i < this.nodosPendientes.size(); i++) 
+		{
+			if (this.nodosMarcados[i] && !this.nodosProcesados[i]) 
+			{
 				return i;
 			}
-
 		}
-
 		return -1;
-
-	}
+}
 	
 	public Grafo<T1> obtenerRecorrido() {
 		return this.recorrido;
