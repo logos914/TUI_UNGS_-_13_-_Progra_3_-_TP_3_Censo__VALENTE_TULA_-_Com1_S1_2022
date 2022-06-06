@@ -61,13 +61,11 @@ public class Nodo<T1> {
 	
 	public boolean esVecino(Nodo<T1> nodoVecino) {
 		
-		if (this.vecinos.size() == 0) {
+		if (this.vecinos.size() == 0 || nodoVecino == null) {
 			return false;
 		} else {
 			Distancia<T1> encontrado = null;
-			
 			encontrado = this.obtenerDistancia(nodoVecino);
-			
 			if (encontrado == null) {
 				return false;
 			} else {
