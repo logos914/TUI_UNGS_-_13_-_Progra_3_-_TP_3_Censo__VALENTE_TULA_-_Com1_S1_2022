@@ -25,6 +25,7 @@ public class BFS<T1> {
 		{
 			obtenerNodoActualYMarcarVecinos();
 		}
+		this.completarRecorridoSiEsNecesario();
 		return seRecorrieronTodosLosVertices();
 
 	}
@@ -51,15 +52,16 @@ public class BFS<T1> {
 		agregarVerticeEnElRecorrido(pos);
 	}
 
-	private void agregarVerticeEnElRecorrido(int pos) {
-		//Agregamos el vertice actual al recorrido
+	private void agregarVerticeEnElRecorrido(int pos) {	
 		this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos));
-		
-		// Si es el último vértice procesado (es decir el anteúltimo nodo del grafo)
-		// entonces agregamos también el último nodo del grafo al recorrido.
-		if (pos + 2 == this.grafo.tamano()) 
-		{
-			this.recorrido.agregarVertice(this.grafo.obtenerVerticeConVecinos(pos + 1));
+	}
+	
+	private void completarRecorridoSiEsNecesario() {
+		int i = proximoParaProcesar();
+		while(i != -1) {
+		this.agregarVerticeEnElRecorrido(i);
+			this.nodosProcesados[i] = true;
+			i = proximoParaProcesar();
 		}
 	}
 
@@ -98,6 +100,8 @@ public class BFS<T1> {
 		}
 		return -1;
 }
+	
+	
 	
 	public Grafo<T1> obtenerRecorrido() {
 		return this.recorrido;
