@@ -108,6 +108,15 @@ public class GrafoTest {
 		
 	}
 	
+	@Test
+	public void unVecinoNullNoEsVecino() {
+		this.grafo.agregarVertice(this.a);
+		this.grafo.agregarVertice(this.b);
+		this.grafo.agregarVertice(this.c);
+		this.grafo.agregarArista(this.a,this.b,0.5f);
+		assertFalse(this.a.esVecino(null));
+	}
+	
 	@Test (expected = IllegalArgumentException.class)
 	public void testNoSePuedeAristaHaciaMismoVertice() {
 		this.grafo.agregarVertice(this.a);

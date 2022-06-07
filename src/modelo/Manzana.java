@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.ArrayList;
+
 import org.locationtech.jts.geom.Coordinate; 
 
 import modelo.georreferenciable.geometrico.PoligonoDeCuatroLados;
@@ -9,22 +11,21 @@ public class Manzana {
 	
 	private Censista censistaAsignado;
 	private PoligonoDeCuatroLados poligonoGeografico;
-	private Coordinate[] coordenadasDeAristas;
+	private ArrayList<Coordinate> coordenadasDeAristas;
+	private Coordinate centro;
 	
-	private Manzana(Coordinate[] coordenadasDeAristas) {
-		this.coordenadasDeAristas = coordenadasDeAristas;
+	private Manzana(ArrayList<Coordinate> aristas) {
+		this.coordenadasDeAristas = aristas;
 	}
 
-	public static Manzana manzana(float[][] aristas) {
-		Manzana manzana = new Manzana(conversionTipoDeCoordenadas (aristas));
-		return manzana; 
-	}
 	
-	public static Manzana manzana(Coordinate[] aristas) {
+	public static Manzana manzanaDesdeCoordenadas(ArrayList<Coordinate> aristas) {
 		Manzana manzana = new Manzana(aristas);
+		manzana.crearPoligonoDeCuatroLados();
 		return manzana; 
 	}
 	
+	@SuppressWarnings("unused")
 	private static Coordinate[]  conversionTipoDeCoordenadas (float[][] aristas) {
 		Coordinate[] aristasComoCoordenadas = new Coordinate[aristas.length];
 	    int contador = 0;
@@ -43,6 +44,28 @@ public class Manzana {
 		this.poligonoGeografico = new PoligonoDeCuatroLados(this.coordenadasDeAristas);
 	}
 
+	public ArrayList<Coordinate> getCoordenadasDeAristas() {
+		return this.coordenadasDeAristas;
+	}
+	
+	public boolean laManzanaContiene (Coordinate elemento) {
+		return this.poligonoGeografico.contiene(elemento);
+	}
+
+
+	public Coordinate getCentro() {
+		return centro;
+	}
+
+
+	public void setCentro(Coordinate centro) {
+		this.centro = centro;
+	}
+	
+	public Censista getCensista() {
+		return this.censistaAsignado;
+	}
+	
 	
 
 }

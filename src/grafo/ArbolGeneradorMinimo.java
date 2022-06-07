@@ -7,6 +7,7 @@ public class ArbolGeneradorMinimo<T1> {
 	private Grafo<T1> grafo;
 	private Grafo<T1> arbol;
 	private ArrayList<Arista<T1>> aristas;
+
 	
 	Nodo<T1> nodoActualDelGrafo;
 	Nodo<T1> nodoActualParaArbol;
@@ -122,6 +123,7 @@ public class ArbolGeneradorMinimo<T1> {
 	
 	private void agregarVerticeActualAlArbol() {
 		this.arbol.agregarVertice(nodoActualParaArbol);
+	
 	}
 
 

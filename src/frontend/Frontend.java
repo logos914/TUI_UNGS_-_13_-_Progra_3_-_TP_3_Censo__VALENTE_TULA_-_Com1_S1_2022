@@ -2,86 +2,117 @@ package frontend;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
+import org.openstreetmap.gui.jmapviewer.MapMarkerDot;
 import org.openstreetmap.gui.jmapviewer.MapPolygonImpl;
+import org.openstreetmap.gui.jmapviewer.interfaces.MapMarker;
 
 import controlador.Controlador;
+import grafo.Nodo;
+import modelo.Manzana;
 
 public class Frontend {
 
 	private JFrame frameInicial;
 	private JFrame frameMapa;
-
+	private JFrame frameCensistas;
 	private JMapViewer viewerMapa;
+	private Controlador controlador;
+	private JCheckBox chkboxIgnoraOrdenImportacion;
+	private String pathArchivoGeoJson;
+	private JComboBox<String> combo1;
 
-	Controlador controlador = new Controlador();
+	public Frontend(Controlador controlador) {
 
-	public Frontend() {
-		initialize();
-	}
-
-	public void crearVistaInterfaz() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
+			this.controlador = controlador;
+			initialize();
+
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
 		}
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Frontend window = new Frontend();
-					window.frameInicial.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
 	}
 
 	private void initialize() {
-		frameInicial();
+		this.frameInicial();
+		this.frameInicial.setVisible(true);
 	}
 
 	private JFrame frameInicial() {
 		frameInicial = new JFrame();
-		
 		fondoDePantalla(frameInicial);
-		
+
 		frameInicial.setTitle("Censo 2022");
 		frameInicial.setBounds(100, 100, 850, 700);
 		frameInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frameInicial.getContentPane().setLayout(null);
 		frameInicial.setLocationRelativeTo(null);
 
-		JButton botonInicio = new JButton("Comenzar");
-		botonInicio.setBounds(390, 455, 110, 23);
+		JButton botonInicio = new JButton("Importar Radio Censal");
+		botonInicio.setBounds(366, 455, 220, 23);
+		botonInicio.setOpaque(false);
 		botonInicio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				accionBoton("Comenzar");
+				importarRadioCensal();
 			}
 		});
+
+		chkboxIgnoraOrdenImportacion = new JCheckBox("Ignorar la jerarqu\u00EDa u orden de importaci\u00F3n");
+		chkboxIgnoraOrdenImportacion.setToolTipText("");
+		chkboxIgnoraOrdenImportacion.setSelected(true);
+		chkboxIgnoraOrdenImportacion.setBounds(350, 500, 250, 23);
+		chkboxIgnoraOrdenImportacion.setOpaque(false);
+		chkboxIgnoraOrdenImportacion.setForeground(Color.WHITE);
+
+		JLabel lblSobreJerarquia = new JLabel(
+				"<html>Los datos importados de un geojson provienen con un orden secuencial. "
+						+ "Las manzanas y la uni\u00F3n entre ellas se ingestan siempre en dicho orden, "
+						+ "y producen una primera manzana y recorridos de asignaci\u00F3n fijos que "
+						+ "son determinados por dicha ordenaci\u00F3n. Ignorar esa jerarqu\u00EDa u "
+						+ "orden, obliga al programa a asignar manzanas de diferente manera en cada ejecuci\u00F3n.");
+		lblSobreJerarquia.setVerticalAlignment(SwingConstants.TOP);
+		lblSobreJerarquia.setHorizontalAlignment(SwingConstants.CENTER);
+		lblSobreJerarquia.setBounds(300, 525, 450, 80);
+		lblSobreJerarquia.setOpaque(false);
+		lblSobreJerarquia.setForeground(Color.LIGHT_GRAY);
+
 		frameInicial.getContentPane().add(botonInicio);
+		frameInicial.getContentPane().add(chkboxIgnoraOrdenImportacion);
+		frameInicial.getContentPane().add(lblSobreJerarquia);
+
+		frameInicial.setLocationRelativeTo(null);
 		return frameInicial;
 	}
 
@@ -91,9 +122,9 @@ public class Frontend {
 		frameMapa.setBounds(300, 300, 1280, 720);
 		frameMapa.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		viewerMapa = new JMapViewer();
+		this.viewerMapa = new JMapViewer();
 		Coordinate coordenadaInicial = new Coordinate(-34.52202, -58.70002);
-		viewerMapa.setDisplayPosition(coordenadaInicial, 14);
+		this.viewerMapa.setDisplayPosition(coordenadaInicial, 14);
 
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -105,19 +136,108 @@ public class Frontend {
 
 		frameMapa.add(contentPane);
 
-		panelMapa.add(viewerMapa);
+		panelMapa.add(this.viewerMapa);
 
-		JButton botonUbicacionMapa = new JButton("Ubicar en mapa");
+		JButton botonUbicacionMapa = new JButton("Distribuir censistas");
 		botonUbicacionMapa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				accionBoton("Ubicar");
+				distribuirCensistas();
+				botonUbicacionMapa.setText("Redistribuir censistas");
 			}
 		});
 
-		botonUbicacionMapa.setBounds(10, 647, 110, 23);
-		viewerMapa.add(botonUbicacionMapa);
+		botonUbicacionMapa.setBounds(10, 647, 150, 23);
+		this.viewerMapa.add(botonUbicacionMapa);
 
+		JButton botonZoom = new JButton("Centrar");
+		botonZoom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				zoomAMarcadores();
+			}
+		});
+		botonZoom.setBounds(170, 647, 110, 23);
+		this.viewerMapa.add(botonZoom);
+
+		JButton botonMenu = new JButton("Volver al inicio");
+		botonMenu.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				volverAlMenu();
+			}
+		});
+		botonMenu.setBounds(290, 647, 110, 23);
+		this.viewerMapa.add(botonMenu);
+
+		JButton botonCensistas = new JButton("Ver censistas asignados");
+		botonCensistas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				verCensistas();
+			}
+		});
+		botonCensistas.setBounds(410, 647, 200, 23);
+		this.viewerMapa.add(botonCensistas);
+
+		frameMapa.setLocationRelativeTo(null);
 		return frameMapa;
+	}
+
+	private JFrame frameCensistas() {
+		frameCensistas = new JFrame();
+		frameCensistas.setLayout(new BorderLayout());
+		frameCensistas.setTitle("Listado de Censistas");
+		frameCensistas.setBounds(0, 0, 330, 200);
+		frameCensistas.add(switcherPane());
+		frameCensistas.pack();
+		return frameCensistas;
+	}
+
+	private JPanel switcherPane() {
+		JPanel panel = new JPanel();
+		BufferedImage[] images;
+		JLabel lblBackground;
+		JComboBox comboBox;
+		String[] IMAGES = new String[] { "src/visual/censista1.jpg", "src/visual/censista2.jpg",
+				"src/visual/censista3.jpg", "src/visual/censista4.jpg", "src/visual/censista5.jpg",
+				"src/visual/censista6.jpg", "src/visual/censista17.jpg", "src/visual/censista8.jpg",
+				"src/visual/censista9.jpg", "src/visual/censista10.jpg" };
+
+		images = new BufferedImage[this.controlador.listadoCensistas.size()];
+		for (int index = 0; index < this.controlador.listadoCensistas.size(); index++) {
+			try {
+				images[index] = ImageIO.read(new File(IMAGES[index]));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		panel.setLayout(new BorderLayout());
+		lblBackground = new JLabel();
+		lblBackground.setIcon(new ImageIcon(images[0]));
+
+		panel.add(lblBackground);
+
+		comboBox = new JComboBox();
+		comboBox.getSelectedItem();
+		comboBox.setFont(comboBox.getFont().deriveFont(20f));
+		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+		for (String s : this.controlador.listadoCensistas) {
+			model.addElement(s);
+		}
+		comboBox.setModel(model);
+		comboBox.setSelectedIndex(0);
+
+		lblBackground.setLayout(new GridBagLayout());
+		lblBackground.add(comboBox);
+
+		comboBox.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				lblBackground.setIcon(new ImageIcon(images[comboBox.getSelectedIndex()]));
+			}
+		});
+
+		return panel;
+
 	}
 
 	private void fondoDePantalla(JFrame frame) {
@@ -133,54 +253,106 @@ public class Frontend {
 		}
 	}
 
-	private void accionBoton(String boton) {
-		switch (boton) {
-		case "Comenzar": {
-			buscarArchivo();
-			frameMapa();
-			frameMapa.setVisible(true);
-			frameInicial.setVisible(false);
-			break;
-		}
-		case "Ubicar": {
-			ubicarEnMapa();
-		}
-		}
+	private void volverAlMenu() {
+		this.controlador = null;
+		this.controlador = new Controlador();
+		frameMapa.setVisible(false);
+		frameMapa.dispose();
+		frameInicial.setVisible(true);
 	}
 
-	private void buscarArchivo() {
+	private void zoomAMarcadores() {
+		this.viewerMapa.setDisplayToFitMapPolygons();
+	}
+
+	private void verCensistas() {
+		frameCensistas();
+		frameCensistas.setVisible(true);
+	}
+
+	private void importarRadioCensal() {
+		buscarArchivoMapa();
+	}
+
+	private void mostrarRadioCensalImportado() {
+		this.controlador.importarDatos(this.pathArchivoGeoJson, this.chkboxIgnoraOrdenImportacion.isSelected());
+		frameMapa();
+		frameInicial.setVisible(false);
+		frameMapa.setVisible(true);
+		ubicarEnMapa();
+		zoomAMarcadores();
+
+	}
+
+	public void buscarArchivoMapa() {
 		JFileChooser chooser = new JFileChooser();
-		//Abre el directorio sobre el cual se encuentra el proyecto.
-		chooser.setCurrentDirectory(new java.io.File("."));
-		//Permite unicamente ingresar archivos de tipo ".geojson".
-		chooser.setFileFilter(new FileNameExtensionFilter(".geojson","geojson"));
-		//Mensaje generico.
-		chooser.setDialogTitle("Busca el archivo a leer");
-		//Indicamos que solamente elijamos archivos y no carpetas o directorios.
+		chooser.setCurrentDirectory(new java.io.File("./Radios Censales Para Importar/"));
+		chooser.setFileFilter(new FileNameExtensionFilter(".geojson", "geojson"));
+		chooser.setDialogTitle("Importar archivo con radio censal");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		chooser.setAcceptAllFileFilterUsed(false);
 
 		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-			//Le enviamos el path como string al controlador.
-			controlador.importarDatos(chooser.getSelectedFile().toString());
+			this.pathArchivoGeoJson = chooser.getSelectedFile().toString();
+			mostrarRadioCensalImportado();
 		} else {
-			System.out.println("No Selection.");
+			buscarArchivoMapa();
 		}
 	}
-	
+
 	private void ubicarEnMapa() {
-		Coordinate uno = new Coordinate(-34.536196, -58.712407);
-		Coordinate dos = new Coordinate(-34.535595, -58.711796);
-		Coordinate tres = new Coordinate(-34.536275, -58.710852);
-		Coordinate cuatro = new Coordinate(-34.536841, -58.711452);
+		for (Nodo<Manzana> i : this.controlador.getManzanas()) {
 
-		List<Coordinate> listaPuntos = new ArrayList<Coordinate>(Arrays.asList(uno, dos, tres, cuatro));
+			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 
-		MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
+			// pero debemos convertirlos desde el tipo de coordenada de jts
+			for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
+				listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(), e.getY()));
+			}
+			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
+			this.viewerMapa.addMapPolygon(rectangulo);
+			rectangulo.setColor(Color.RED);
+			rectangulo.setVisible(true);
+		}
 
-		viewerMapa.addMapPolygon(rectangulo);
+		this.viewerMapa.setDisplayToFitMapPolygons();
+	}
 
-		rectangulo.setColor(Color.RED);
-		rectangulo.setBackColor(Color.GREEN);
+	private void distribuirCensistas() {
+
+		if (this.controlador.hayRecorridoYaCreado()) {
+			this.controlador.reinicializar();
+		}
+
+		this.controlador.obtenerArbolCensal();
+		this.viewerMapa.removeAllMapMarkers();
+		this.viewerMapa.removeAllMapPolygons();
+
+		// TODO: Refactuor urgente aqui con el mismo codigo de la f anterior
+		for (Nodo<Manzana> i : this.controlador.getManzanasDeRecorrido()) {
+
+			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
+
+			// pero debemos convertirlos desde el tipo de coordenada de jts
+			for (org.locationtech.jts.geom.Coordinate e : i.getInformacion().getCoordenadasDeAristas()) {
+				listaPuntos.add(new org.openstreetmap.gui.jmapviewer.Coordinate(e.getX(), e.getY()));
+			}
+
+			MapPolygonImpl rectangulo = new MapPolygonImpl(listaPuntos);
+			this.viewerMapa.addMapPolygon(rectangulo);
+			rectangulo.setColor(Color.BLUE);
+			rectangulo.setBackColor(Color.GREEN);
+			rectangulo.setVisible(true);
+
+			org.openstreetmap.gui.jmapviewer.Coordinate coordCentro = new org.openstreetmap.gui.jmapviewer.Coordinate(
+					i.getInformacion().getCentro().x, i.getInformacion().getCentro().y);
+			MapMarker marcador = new MapMarkerDot(i.getInformacion().getCensista().getNombre(), coordCentro);
+			this.viewerMapa.addMapMarker(marcador);
+
+		}
+
+		this.viewerMapa.setDisplayToFitMapPolygons();
 	}
 }
