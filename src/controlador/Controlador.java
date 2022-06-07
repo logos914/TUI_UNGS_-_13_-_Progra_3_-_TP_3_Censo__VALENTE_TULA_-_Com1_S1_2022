@@ -1,9 +1,15 @@
 package controlador;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import org.locationtech.jts.geom.Coordinate;
 
+import frontend.Frontend;
 import grafo.ArbolGeneradorMinimo;
 import grafo.BFS;
 import grafo.Grafo;
@@ -19,13 +25,11 @@ public class Controlador {
 
 	private GeoJSON datos;
 	private Grafo<Manzana> radiocensal;
-
+	private Censista censista;
 	public ArrayList<String> listadoCensistas = new ArrayList<String>();
-
 	private Grafo<Manzana> arbolcensal;
 	private Grafo<Manzana> recorrido;
-
-	private int contadorNombres;
+	private int contadorNombres, contadorGenero;
 
 	public Controlador() {
 		this.radiocensal = new Grafo<Manzana>();
@@ -120,9 +124,17 @@ public class Controlador {
 			if (contadorDeAsignacionMaxima == 3 || !e.esVecino(anterior)) {
 				contadorDeCensistas++;
 				contadorDeAsignacionMaxima = 0;
-				CensistaActual = new Censista(elegirNombre(), contadorDeCensistas);
-				this.contadorNombres++;
-				this.listadoCensistas.add(CensistaActual.getNombre().toString());
+				if (this.contadorGenero % 2 == 0) {
+					CensistaActual = new Censista(elegirNombre("Hombre"), contadorDeCensistas);
+					this.contadorNombres++;
+					this.contadorGenero++;
+					this.listadoCensistas.add(CensistaActual.getNombre().toString());
+				} else {
+					CensistaActual = new Censista(elegirNombre("Mujer"), contadorDeCensistas);
+					this.contadorNombres++;
+					this.contadorGenero++;
+					this.listadoCensistas.add(CensistaActual.getNombre().toString());
+				}
 			}
 
 			e.getInformacion().asignarCensista(CensistaActual);
@@ -132,12 +144,22 @@ public class Controlador {
 		}
 	}
 
-	public String elegirNombre() {
-		String[] nombres = { "Marcos", "Alejo", "Tomas", "Miguel", "Sandra", "Luciana", "Micaela", "Mauro", "Ignacio",
-				"Franco", "Martin", "Anabela", "Ernesto", "Sofia", "Manuel", "Antonio", "Jose", "William", "Maria",
-				"Patricia", "Rosario", "Isabel", "Juana", "Emma", "Cecilia", "Gabriela", "Gabriel", "Maitena", "Lucas",
-				"Alejandro", "Adrian" };
-		return nombres[contadorNombres];
+	public String elegirNombre(String genero) {
+		String[] nombresHombre = { "Marcos", "Alejo", "Tomas", "Miguel", "Mauro", "Ignacio", "Franco", "Martin",
+				"Ernesto", "Manuel", "Antonio", "Jose", "William", "Gabriel", "Lucas", "Alejandro", "Adrian", "Mariano",
+				"Gaston", "Jano", "Ariel", "Hugo", "Fabian", "Lucas", "Rodrigo", "Facundo", "Matias", "Bruno",
+				"Francisco", "Michael", "Arthur", "Sam", "Ryan", "Brian", "Dominic", "Guillermo", "Dwayne", "Sylvester",
+				"Patrick" };
+		String[] nombresMujer = { "Sandra", "Luciana", "Micaela", "Anabela", "Sofia", "Maria", "Patricia", "Rosario",
+				"Isabel", "Juana", "Emma", "Cecilia", "Gabriela", "Maitena", "Sol", "Malena", "Priscila", "Julieta",
+				"Ariadna", "Melany", "Julieta", "Lourdes", "Brisa", "Anahi", "Maria", "Monica", "Zoe", "Nadia",
+				"Michelle", "Emmanuelle", "Larissa", "Otavia", "Franchesca", "Francisca", "Gwen", "Azula", "Katara",
+				"Toph", "Anabelle" };
+		if (genero.equalsIgnoreCase("Mujer")) {
+			return nombresMujer[contadorNombres];
+		} else {
+			return nombresHombre[contadorNombres];
+		}
 	}
 
 	public void reinicializar() {
@@ -151,7 +173,8 @@ public class Controlador {
 		this.recorrido = null;
 
 		this.contadorNombres = 0;
-
+		this.contadorGenero = 0;
+		
 		this.listadoCensistas.clear();
 
 		this.convertirGeoJsonenGrafo();

@@ -24,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -50,7 +51,6 @@ public class Frontend {
 	private Controlador controlador;
 	private JCheckBox chkboxIgnoraOrdenImportacion;
 	private String pathArchivoGeoJson;
-	private JComboBox<String> combo1;
 
 	public Frontend(Controlador controlador) {
 
@@ -58,7 +58,6 @@ public class Frontend {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			this.controlador = controlador;
 			initialize();
-
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
@@ -183,10 +182,12 @@ public class Frontend {
 	private JFrame frameCensistas() {
 		frameCensistas = new JFrame();
 		frameCensistas.setLayout(new BorderLayout());
-		frameCensistas.setTitle("Listado de Censistas");
+		frameCensistas.setTitle("Perfil de los Censistas");
 		frameCensistas.setBounds(0, 0, 330, 200);
 		frameCensistas.add(switcherPane());
 		frameCensistas.pack();
+		JOptionPane.showMessageDialog(null,
+				"Asumimos que algunos censistas son gemelos de otros.");
 		return frameCensistas;
 	}
 
@@ -195,27 +196,33 @@ public class Frontend {
 		BufferedImage[] images;
 		JLabel lblBackground;
 		JComboBox comboBox;
-		String[] IMAGES = new String[] { "src/visual/censista1.jpg", "src/visual/censista2.jpg",
-				"src/visual/censista3.jpg", "src/visual/censista4.jpg", "src/visual/censista5.jpg",
-				"src/visual/censista6.jpg", "src/visual/censista17.jpg", "src/visual/censista8.jpg",
-				"src/visual/censista9.jpg", "src/visual/censista10.jpg" };
+		String[] IMAGES = new String[] { "src/visual/censista1.png", "src/visual/censista2.png",
+				"src/visual/censista3.png", "src/visual/censista4.png", "src/visual/censista5.png",
+				"src/visual/censista6.png", "src/visual/censista7.png", "src/visual/censista8.png",
+				"src/visual/censista9.png", "src/visual/censista10.png", "src/visual/censista11.png",
+				"src/visual/censista12.png", "src/visual/censista13.png", "src/visual/censista14.png",
+				"src/visual/censista15.png", "src/visual/censista16.png", "src/visual/censista17.png",
+				"src/visual/censista18.png", "src/visual/censista19.png", "src/visual/censista20.png",
+				"src/visual/censista21.png", "src/visual/censista22.png", "src/visual/censista23.png",
+				"src/visual/censista24.png", "src/visual/censista25.png", "src/visual/censista26.png",
+				"src/visual/censista27.png", "src/visual/censista28.png", "src/visual/censista29.png",
+				"src/visual/censista30.png", "src/visual/censista31.png", "src/visual/censista32.png",
+				"src/visual/censista33.png", "src/visual/censista34.png", "src/visual/censista35.png" };
 
 		images = new BufferedImage[this.controlador.listadoCensistas.size()];
+		System.out.println(this.controlador.listadoCensistas.size());
 		for (int index = 0; index < this.controlador.listadoCensistas.size(); index++) {
 			try {
 				images[index] = ImageIO.read(new File(IMAGES[index]));
 			} catch (IOException e1) {
-				e1.printStackTrace();
 			}
 		}
-
 		panel.setLayout(new BorderLayout());
 		lblBackground = new JLabel();
 		lblBackground.setIcon(new ImageIcon(images[0]));
-
 		panel.add(lblBackground);
-
 		comboBox = new JComboBox();
+		comboBox.setSize(150,150);
 		comboBox.getSelectedItem();
 		comboBox.setFont(comboBox.getFont().deriveFont(20f));
 		DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
@@ -224,20 +231,15 @@ public class Frontend {
 		}
 		comboBox.setModel(model);
 		comboBox.setSelectedIndex(0);
-
 		lblBackground.setLayout(new GridBagLayout());
 		lblBackground.add(comboBox);
-
 		comboBox.addItemListener(new ItemListener() {
-
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				lblBackground.setIcon(new ImageIcon(images[comboBox.getSelectedIndex()]));
 			}
 		});
-
 		return panel;
-
 	}
 
 	private void fondoDePantalla(JFrame frame) {
@@ -303,7 +305,7 @@ public class Frontend {
 	private void ubicarEnMapa() {
 		for (Nodo<Manzana> i : this.controlador.getManzanas()) {
 
-			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			// Los polÃ­gonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 
 			// pero debemos convertirlos desde el tipo de coordenada de jts
@@ -329,10 +331,9 @@ public class Frontend {
 		this.viewerMapa.removeAllMapMarkers();
 		this.viewerMapa.removeAllMapPolygons();
 
-		// TODO: Refactuor urgente aqui con el mismo codigo de la f anterior
 		for (Nodo<Manzana> i : this.controlador.getManzanasDeRecorrido()) {
 
-			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			// Los polÃ­gonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 
 			// pero debemos convertirlos desde el tipo de coordenada de jts
