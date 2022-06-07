@@ -52,9 +52,7 @@ public class Frontend {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			this.controlador = controlador;
-			this.frameInicial = this.frameInicial();
-			this.frameInicial.setVisible(true);
-
+			initialize();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
@@ -62,8 +60,8 @@ public class Frontend {
 	}
 
 	private void initialize() {
-		frameInicial();
-		frameInicial.setVisible(true);
+		this.frameInicial();
+		this.frameInicial.setVisible(true);
 	}
 
 	private JFrame frameInicial() {
@@ -76,8 +74,6 @@ public class Frontend {
 		frameInicial.getContentPane().setLayout(null);
 		frameInicial.setLocationRelativeTo(null);
 		
-		
-
 		JButton botonInicio = new JButton("Importar Radio Censal");
 		botonInicio.setBounds(366, 455, 220, 23);
 		botonInicio.setOpaque(false);
@@ -229,7 +225,7 @@ public class Frontend {
 	private void ubicarEnMapa() {
 		for (Nodo<Manzana> i : this.controlador.getManzanas()) {
 
-			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			// Los polÃ­gonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 
 			// pero debemos convertirlos desde el tipo de coordenada de jts
@@ -246,8 +242,6 @@ public class Frontend {
 		this.viewerMapa.setDisplayToFitMapPolygons();
 	}
 	
-	
-	
 	private void distribuirCensistas() {
 		
 		if (this.controlador.hayRecorridoYaCreado()) {
@@ -258,13 +252,9 @@ public class Frontend {
 		this.viewerMapa.removeAllMapMarkers();
 		this.viewerMapa.removeAllMapPolygons();
 		
-		
-	
-		
-		// TODO: Refactuor urgente aqui con el mismo codigo de la f anterior
 		for (Nodo<Manzana> i : this.controlador.getManzanasDeRecorrido()) {
 
-			// Los polígonos del mapa visual se forman con un tipo de coordenada diferente
+			// Los polÃ­gonos del mapa visual se forman con un tipo de coordenada diferente
 			List<org.openstreetmap.gui.jmapviewer.Coordinate> listaPuntos = new ArrayList<Coordinate>();
 
 			// pero debemos convertirlos desde el tipo de coordenada de jts
