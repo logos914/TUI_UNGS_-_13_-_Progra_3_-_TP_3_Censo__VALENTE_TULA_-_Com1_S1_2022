@@ -26,9 +26,10 @@ public class Controlador {
 	private GeoJSON datos;
 	private Grafo<Manzana> radiocensal;
 	private Censista censista;
-
+	public ArrayList<String> listadoCensistas = new ArrayList<String>();
 	private Grafo<Manzana> arbolcensal;
 	private Grafo<Manzana> recorrido;
+	private int contadorNombres, contadorGenero;
 
 	public Controlador() {
 		this.radiocensal = new Grafo<Manzana>();
@@ -78,22 +79,21 @@ public class Controlador {
 	public ArrayList<Nodo<Manzana>> getManzanas() {
 		return this.radiocensal.obtenerTodosLosVertices();
 	}
-	
+
 	public ArrayList<Nodo<Manzana>> getManzanasDeRecorrido() {
 		return this.recorrido.obtenerTodosLosVertices();
 	}
-	
+
 	public boolean hayRecorridoYaCreado() {
 		if (this.recorrido != null) {
-		
+
 			return true;
 		} else {
 
 			return false;
 		}
-		
-	}
 
+	}
 
 	private Nodo<Manzana> encontrarManzanaALaQuePertenece(Coordinate coordenada) {
 		for (Nodo<Manzana> i : this.radiocensal.obtenerTodosLosVertices()) {
@@ -106,10 +106,10 @@ public class Controlador {
 	}
 
 	public void obtenerArbolCensal() {
-		
+
 		ArbolGeneradorMinimo<Manzana> arbolGeneradorMinimo = new ArbolGeneradorMinimo(this.radiocensal);
 		this.arbolcensal = arbolGeneradorMinimo.generarMinimo();
-		
+
 		BFS bfs = new BFS(this.arbolcensal);
 		bfs.esConexo();
 		this.recorrido = bfs.obtenerRecorrido();
@@ -118,39 +118,66 @@ public class Controlador {
 		Integer contadorDeCensistas = 0;
 		Censista CensistaActual = null;
 		Nodo<Manzana> anterior = null;
-		
 
-		for (Nodo<Manzana> e : recorrido.obtenerTodosLosVertices()) 
-		{
-			
-			if (contadorDeAsignacionMaxima == 3 || !e.esVecino(anterior)) 
-			{
+		for (Nodo<Manzana> e : recorrido.obtenerTodosLosVertices()) {
+
+			if (contadorDeAsignacionMaxima == 3 || !e.esVecino(anterior)) {
 				contadorDeCensistas++;
 				contadorDeAsignacionMaxima = 0;
-				CensistaActual = new Censista(contadorDeCensistas.toString(), contadorDeCensistas);
+				if (this.contadorGenero % 2 == 0) {
+					CensistaActual = new Censista((elegirNombre("Hombre")+": "+contadorDeCensistas.toString()), contadorDeCensistas);
+					this.contadorNombres++;
+					this.contadorGenero++;
+					this.listadoCensistas.add(CensistaActual.getNombre().toString());
+				} else {
+					CensistaActual = new Censista((elegirNombre("Mujer")+": "+contadorDeCensistas.toString()), contadorDeCensistas);
+					this.contadorNombres++;
+					this.contadorGenero++;
+					this.listadoCensistas.add(CensistaActual.getNombre().toString());
+				}
 			}
-			
+
 			e.getInformacion().asignarCensista(CensistaActual);
 			contadorDeAsignacionMaxima++;
 			anterior = e;
-			
+
 		}
 	}
-	
-	
+
+	public String elegirNombre(String genero) {
+		String[] nombresHombre = { "Marcos", "Alejo", "Tomas", "Miguel", "Mauro", "Ignacio", "Franco", "Martin",
+				"Ernesto", "Manuel", "Antonio", "Jose", "William", "Gabriel", "Lucas", "Alejandro", "Adrian", "Mariano",
+				"Gaston", "Jano", "Ariel", "Hugo", "Fabian", "Lucas", "Rodrigo", "Facundo", "Matias", "Bruno",
+				"Francisco", "Michael", "Arthur", "Sam", "Ryan", "Brian", "Dominic", "Guillermo", "Dwayne", "Sylvester",
+				"Patrick" };
+		String[] nombresMujer = { "Sandra", "Luciana", "Micaela", "Anabela", "Sofia", "Maria", "Patricia", "Rosario",
+				"Isabel", "Juana", "Emma", "Cecilia", "Gabriela", "Maitena", "Sol", "Malena", "Priscila", "Julieta",
+				"Ariadna", "Melany", "Julieta", "Lourdes", "Brisa", "Anahi", "Maria", "Monica", "Zoe", "Nadia",
+				"Michelle", "Emmanuelle", "Larissa", "Otavia", "Franchesca", "Francisca", "Gwen", "Azula", "Katara",
+				"Toph", "Anabelle" };
+		if (genero.equalsIgnoreCase("Mujer")) {
+			return nombresMujer[contadorNombres];
+		} else {
+			return nombresHombre[contadorNombres];
+		}
+	}
+
 	public void reinicializar() {
 		this.datos.inicializar();
 		this.datos.quitarJerarquiaDeImportacion();
-		
+
 		this.radiocensal = null;
 		this.radiocensal = new Grafo<Manzana>();
-		
+
 		this.arbolcensal = null;
 		this.recorrido = null;
 
+		this.contadorNombres = 0;
+		this.contadorGenero = 0;
+		
+		this.listadoCensistas.clear();
+
 		this.convertirGeoJsonenGrafo();
 	}
-	
-
 
 }
