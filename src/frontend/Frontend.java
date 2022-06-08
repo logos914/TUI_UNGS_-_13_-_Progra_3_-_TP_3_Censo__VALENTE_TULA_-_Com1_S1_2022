@@ -349,7 +349,7 @@ public class Frontend {
 
 			org.openstreetmap.gui.jmapviewer.Coordinate coordCentro = new org.openstreetmap.gui.jmapviewer.Coordinate(
 					i.getInformacion().getCentro().x, i.getInformacion().getCentro().y);
-			MapMarker marcador = new MapMarkerDot(i.getInformacion().getCensista().getNombre(), coordCentro);
+			MapMarker marcador = new MapMarkerDot(String.valueOf(i.getInformacion().getCensista().getNumero()), coordCentro);
 			this.viewerMapa.addMapMarker(marcador);
 
 		}

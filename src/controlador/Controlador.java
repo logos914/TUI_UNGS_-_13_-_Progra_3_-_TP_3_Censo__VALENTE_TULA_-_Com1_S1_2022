@@ -125,12 +125,12 @@ public class Controlador {
 				contadorDeCensistas++;
 				contadorDeAsignacionMaxima = 0;
 				if (this.contadorGenero % 2 == 0) {
-					CensistaActual = new Censista(elegirNombre("Hombre"), contadorDeCensistas);
+					CensistaActual = new Censista((elegirNombre("Hombre")+": "+contadorDeCensistas.toString()), contadorDeCensistas);
 					this.contadorNombres++;
 					this.contadorGenero++;
 					this.listadoCensistas.add(CensistaActual.getNombre().toString());
 				} else {
-					CensistaActual = new Censista(elegirNombre("Mujer"), contadorDeCensistas);
+					CensistaActual = new Censista((elegirNombre("Mujer")+": "+contadorDeCensistas.toString()), contadorDeCensistas);
 					this.contadorNombres++;
 					this.contadorGenero++;
 					this.listadoCensistas.add(CensistaActual.getNombre().toString());
