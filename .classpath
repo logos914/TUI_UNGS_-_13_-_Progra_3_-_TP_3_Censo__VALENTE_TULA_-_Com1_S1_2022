@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+
+	<classpathentry kind="lib" path="src/visual/mapa/JMapViewer.jar"/>
+	<classpathentry kind="lib" path="src/modelo/gson-2.2.jar"/>
+	<classpathentry kind="lib" path="src/modelo/georreferenciable/geometrico/jts-core-1.18.2.jar"/>
+	<classpathentry kind="lib" path="src/modelo/georreferenciable/geometrico/jts-core-1.18.2-sources.jar"/>
+	<classpathentry kind="lib" path="src/modelo/georreferenciable/geometrico/jts-io-common-1.18.2.jar"/>
+	<classpathentry kind="lib" path="src/modelo/georreferenciable/geometrico/jts-io-common-1.18.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="src/modelo/georreferenciable/geometrico/jts-io-common-1.18.2-sources.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
